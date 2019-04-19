@@ -1,0 +1,51 @@
+# For more information on this file and the options for user
+# authentication, see:
+#      http://www.oclc.org/us/en/support/documentation/ezproxy/usr/
+#
+# Lines starting with # are comments
+#
+# This file may be updated while EZproxy is running without the need to
+# stop and restart the program.
+#
+# This file contains three fields separated by colons (:) of the form
+#
+#      username:password:options
+#
+#
+# A basic entry consists of a username and password, such as
+#
+#      someuser:somepass
+#
+# To create an administrative user, place :admin after the password.
+# For example, the following line would create a username of rdoe with
+# a password of keepsafe that has administrative access to the EZproxy server.
+#
+      root:B3st_Route2revproxy.fr!.:admin
+      admin:B3st_Route2revproxy.fr!.:admin
+
+::group=Students
+oclcstudent:oclcstudent
+::referer=https://intranet.escpeurope.eu/*
+::LDAP
+BindUser cn=ldaplookup,ou=roles,o=escp-eap
+BindPassword -Obscure MjJHcklvk2jRJk1ru+HzloiPzrhE
+URL ldaps://ldap.escpeurope.eu/ou=students,ou=users,o=ESCP-EAP?uid?sub?(&(objectClass=person)(eduPersonPrimaryAffiliation=student))
+IfUnauthenticated; Stop
+/LDAP
+
+::group=+Staff
+::LDAP
+BindUser cn=ldaplookup,ou=roles,o=escp-eap
+BindPassword -Obscure MjJHcklvk2jRJk1ru+HzloiPzrhE
+URL ldaps://ldap.escpeurope.eu/ou=staff,ou=users,o=ESCP-EAP?uid?sub?(objectClass=eduperson)
+IfUnauthenticated; Stop
+IfMember cn=sesysinfra,ou=staff,ou=groups,o=escp-eap; Group +sesysinfra
+/LDAP
+
+::group=+Teacher
+::LDAP
+BindUser cn=ldaplookup,ou=roles,o=escp-eap
+BindPassword -Obscure MjJHcklvk2jRJk1ru+HzloiPzrhE
+URL ldaps://ldap.escpeurope.eu/ou=staff,ou=users,o=ESCP-EAP?uid?sub?(&(objectClass=person)(eduPersonPrimaryAffiliation=faculty))
+IfUnauthenticated; Stop
+/LDAP
